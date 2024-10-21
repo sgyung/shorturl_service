@@ -41,6 +41,7 @@ public class BookController {
     @GetMapping(path ="/book/{id}")
     public Book retrieveBook(@PathVariable Long id){
         Book foundBook = bookMap.get(id);
+
         return foundBook;
     }
 
