@@ -27,6 +27,7 @@ public class BookController {
     @Autowired
     private ConcurrentMap<Long,Book> bookMap;
 
+    private Long idCount = 3L;
 
     @GetMapping(path ="/abc")
     public ResponseEntity<Object> retrieveBook() throws URISyntaxException {
@@ -41,6 +42,10 @@ public class BookController {
     @GetMapping(path ="/book/{id}")
     public Book retrieveBook(@PathVariable Long id){
         Book foundBook = bookMap.get(id);
+
+        if(foundBook == null){
+            throw new BookNotFoundException("요청하신 책은 존재하지 않습니다.");
+        }
 
         return foundBook;
     }
@@ -57,9 +62,34 @@ public class BookController {
     }
 
     @PostMapping(path = "/book")
-    public String insertBook(@Validated  @RequestBody Book book){
-        bookMap.put(book.getId(),book);
+    public String insertBook(@RequestBody Book book){
+        validateBook(book);
+        long newId = idCount;
+        book.setId(newId);
+
+        bookMap.put(newId,book);
+
+        idCount++;
+
         return "OK";
+    }
+
+    public void validateBook(Book book){
+        StringBuilder errorMessage = new StringBuilder();
+
+        if(book.getName() == null || book.getName().trim().isEmpty()){
+            errorMessage.append("책 이름은 필수로 입력해주세요.").append("\n");
+        }
+        if(book.getPrice() == null || book.getPrice() <= 0){
+            errorMessage.append("책 가격은 0 이상이어야 합니다.").append("\n");
+        }
+        if(book.getAuthor() == null || book.getAuthor().trim().isEmpty()){
+            errorMessage.append("책 저자는 필수로 입력해주세요.").append("\n");
+        }
+
+        if(errorMessage.length() > 0){
+            throw new IllegalArgumentException(errorMessage.toString());
+        }
     }
 
     @DeleteMapping(path = "/book/{id}")

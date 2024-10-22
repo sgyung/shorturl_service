@@ -6,7 +6,6 @@ public class Book {
 
     private Long id;
 
-
     private String name;
     private Long price;
     private String author;
@@ -42,4 +41,5 @@ public class Book {
     public void setAuthor(String author) {
         this.author = author;
     }
+
 }
