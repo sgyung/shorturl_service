@@ -94,6 +94,9 @@ public class BookController {
 
     @DeleteMapping(path = "/book/{id}")
     public String deleteBook(@PathVariable Long id){
+        if(!bookMap.containsKey(id)){
+            throw new IllegalArgumentException("해당 id의 책이 존재하지 않습니다.");
+        }
         bookMap.remove(id);
         return "OK";
     }
@@ -101,10 +104,19 @@ public class BookController {
     @PatchMapping(path = "/book")
     public String patchBook(@RequestBody Book bookRequestDto){
         Long id = bookRequestDto.getId();
+
+        if(!bookMap.containsKey(id)){
+            throw new IllegalArgumentException("해당 id의 책이 존재하지 않습니다.");
+        }
+
         Book targetBook = bookMap.get(id);
+
+        validateBook(bookRequestDto);
+
         targetBook.setName(bookRequestDto.getName());
         targetBook.setPrice(bookRequestDto.getPrice());
         return "OK";
     }
+
 
 }
